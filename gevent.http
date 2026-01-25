@@ -1,0 +1,149 @@
+@host = http://localhost:5184
+@token = 1234567891011121314151617118192021222324252627282930
+
+### Регистрация исполнителя
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Грибова Елизавета Константиновна",
+  "userName": "ggribova04",
+  "email": "ggribova04@gmail.com",
+  "idRole": 2,
+  "specialization": "Хозяйка",
+  "city": "Челябинск",
+  "password": "Test1234!",
+  "confirmPassword": "Test1234!"
+}
+
+### Авторизация
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "identifier": "vladus1k",
+  "password": "qazxsw12"
+}
+
+### Регистрация пешки
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Грибова Елизавета Константиновна",
+  "userName": "ggribova042",
+  "email": "ggribova042@gmail.com",
+  "idRole": 1,
+  "password": "Test1234!",
+  "confirmPassword": "Test1234!"
+}
+
+### Получение данных пользователя
+GET {{host}}/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ2dyaWJvdmEwNDIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ2MzA4MjE5LCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.shj_0Dz3gpYj44k3VP2VUMPdShW_q6kp8v2u6x3c9PA
+
+### Обновление данных пользователя
+PUT {{host}}/api/profile/edit
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ2dyaWJvdmEwNCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IjIiLCJleHAiOjE3NDYwODg5OTksImlzcyI6IkdFdmVudCIsImF1ZCI6IkV2ZW50QXBwVXNlcnMifQ.uSvH-axwbXW9iP-9ftOAvDx2qmjGJnarZEz9-FGynkM
+Content-Type: application/json
+
+{
+  "id": 5,
+  "fullName": "Грибова Елизавета Константиновна",
+  "email": "ggribova04@gmail.com",
+  "idRole": 2,
+  "specialization": "Хозяйка",
+  "city": "Челябинск",
+  "description": null,
+  "photoURL": null
+}
+
+### Загрузка фотокарточки в профиль
+POST {{host}}/api/profile/upload-photo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ2dyaWJvdmEwNDIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ2MzA4MjE5LCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.shj_0Dz3gpYj44k3VP2VUMPdShW_q6kp8v2u6x3c9PA
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="CIMG9990.JPG"
+Content-Type: image/jpeg
+
+< C:/Users/79924/Downloads/Telegram Desktop/CIMG9990.JPG
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Создание мероприятия (шаг 1) - ввод основной информации
+POST {{host}}/api/events/create/step1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidmxhZHVzMWsiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ4NDIwOTkxLCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.TCeenFmSBBUkazJ99aiGzjZ4qU73O2zqIEE6c923UnU
+Content-Type: application/json
+
+{
+  "title": "Дай Бог бы работала эта хуйня #2",
+  "date": "2025-06-23",
+  "time": "23:00:01",
+  "idStatus": 0
+}
+
+### Создание мероприятия (шаг 2) - Добавление исполнителя по логину
+POST {{host}}/api/services/add-by-login
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ2dyaWJvdmEwNDIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ2MzA4MjE5LCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.shj_0Dz3gpYj44k3VP2VUMPdShW_q6kp8v2u6x3c9PA
+Content-Type: application/json
+{
+  "login": "ggribova04"
+}
+
+### Создание мероприятия (шаг 2) - Поиск исполнителя по городу и специализации
+POST {{host}}/api/services/search
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ2dyaWJvdmEwNDIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ2MzA4MjE5LCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.shj_0Dz3gpYj44k3VP2VUMPdShW_q6kp8v2u6x3c9PA
+Content-Type: application/json
+{
+  "city": "Челябинск",
+  "specialization": "Программирую"
+}
+
+### Создание мероприятия (шаг 2) - Добавление найденного исполнителя
+POST {{host}}/api/services/add-found-performer
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE1IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InF3ZXJ0eSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IjEiLCJleHAiOjE3NDYyOTU2NDAsImlzcyI6IkdFdmVudCIsImF1ZCI6IkV2ZW50QXBwVXNlcnMifQ.5F3TSOuvVwfFw4Wrxu498BTKLJ6bvpZeKllBVH7jbVQ
+Content-Type: application/json
+{
+    "idUser": 12
+}
+
+### Создание мероприятия (шаг 3) - Добавление задачи
+POST {{host}}/api/tasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidmxhZHVzMWsiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ4NDIwOTkxLCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.TCeenFmSBBUkazJ99aiGzjZ4qU73O2zqIEE6c923UnU
+Content-Type: application/json
+
+{
+  "title": "Настроить презентацию",
+  "description": "Подготовить презентацию для клиентов к мероприятию",
+  "login": "ggribova041",
+  "date": "2025-05-15",
+  "idStatus": 0      
+}
+
+### Создание мероприятия (шаг 3) - Добавление задачи
+GET {{host}}/api/services/event/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ2dyaWJvdmEwNDIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ2MzA4MjE5LCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.shj_0Dz3gpYj44k3VP2VUMPdShW_q6kp8v2u6x3c9PA
+Content-Type: application/json
+
+{
+  //"eventId": 12    
+}
+
+### Создание мероприятия (шаг 3) - Добавление задачи
+POST {{host}}/api/guests
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidmxhZHVzMWsiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ4NDIwOTkxLCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.TCeenFmSBBUkazJ99aiGzjZ4qU73O2zqIEE6c923UnU
+Content-Type: application/json
+
+{
+  "guestInfo": "Гость 5"  
+}
+
+### Обновление статуса исполнителя
+PUT {{host}}/api/events/create/step2/update-status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidmxhZHVzMWsiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzQ4Mjg3NjcxLCJpc3MiOiJHRXZlbnQiLCJhdWQiOiJFdmVudEFwcFVzZXJzIn0.v24SU2LHZEAB05lY2LGAU9_L_uxH0_yRC-4IINJnw2s
+Content-Type: application/json
+
+{
+  "performerId": 1,
+  "newStatusId": 1
+}

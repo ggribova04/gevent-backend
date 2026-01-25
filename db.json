@@ -1,0 +1,191 @@
+{
+  "events": [
+    {
+      "id": "fcad",
+      "title": "проверка",
+      "date": "2025-04-23T00:00:00.000Z",
+      "time": "23:43",
+      "guests": [
+        {
+          "fullName": "абубу"
+        },
+        {
+          "fullName": "бебебе"
+        }
+      ]
+    },
+    {
+      "id": "kmvra8r",
+      "title": "работает родительский компонент",
+      "date": "2025-12-12",
+      "time": "12:12",
+      "guests": [
+        {
+          "fullName": "йухй"
+        },
+        {
+          "fullName": "йуху"
+        }
+      ]
+    },
+    {
+      "id": "a62ljxs",
+      "title": "Проверяю задачи",
+      "date": "2025-04-30",
+      "time": "20:25",
+      "performers": [
+        {
+          "fullName": "ФИО для Исполнитель_1",
+          "login": "Исполнитель_1",
+          "serviceName": "Наименование услуги",
+          "status": "Выполнено"
+        },
+        {
+          "fullName": "Тут будет подходящий исполнитель",
+          "login": "",
+          "serviceName": "Нашла исполнителя",
+          "status": "Не выполнено"
+        }
+      ],
+      "tasks": [
+        {
+          "title": "Задача 1",
+          "responsibleName": "ФИО для я",
+          "responsibleLogin": "я",
+          "deadline": "2025-04-30",
+          "description": "абубубубебебе",
+          "status": "Не выполнено"
+        },
+        {
+          "title": "Задача 2",
+          "responsibleName": "ФИО для не я",
+          "responsibleLogin": "не я",
+          "deadline": "2025-04-30",
+          "description": "опять бубу бебе",
+          "status": "Выполнено"
+        }
+      ],
+      "guests": [
+        {
+          "fullName": "Гость 1"
+        },
+        {
+          "fullName": "Гость 2"
+        },
+        {
+          "fullName": "Гость 3"
+        }
+      ]
+    },
+    {
+      "id": "rvswse4",
+      "title": "1212",
+      "date": "0012-12-12",
+      "time": "21:21",
+      "performers": [
+        {
+          "fullName": "ФИО для 1212",
+          "login": "1212",
+          "serviceName": "Наименование услуги",
+          "status": "Выполнено"
+        }
+      ],
+      "tasks": [
+        {
+          "title": "21212",
+          "responsibleName": "ФИО для 2121212",
+          "responsibleLogin": "2121212",
+          "deadline": "0012-02-21",
+          "description": "1212121",
+          "status": "Выполнено"
+        },
+        {
+          "title": "2121",
+          "responsibleName": "ФИО для 21212",
+          "responsibleLogin": "21212",
+          "deadline": "0121-02-21",
+          "description": "1212",
+          "status": "Выполнено"
+        }
+      ],
+      "guests": [
+        {
+          "fullName": "fcdfd"
+        },
+        {
+          "fullName": "vdf"
+        }
+      ]
+    },
+    {
+      "id": "x8i37ks",
+      "title": "swesw",
+      "date": "0001-11-11",
+      "time": "11:01",
+      "performers": [
+        {
+          "fullName": "ФИО для 11",
+          "login": "11",
+          "serviceName": "Наименование услуги",
+          "status": "Выполнено"
+        },
+        {
+          "fullName": "Тут будет подходящий исполнитель",
+          "login": "",
+          "serviceName": "1223",
+          "status": "Не выполнено"
+        }
+      ],
+      "tasks": [
+        {
+          "title": "dfdef",
+          "responsibleName": "ФИО для 111",
+          "responsibleLogin": "111",
+          "deadline": "11111-11-11",
+          "description": "sfjdkcjwf",
+          "status": "Не выполнено"
+        }
+      ],
+      "guests": [
+        {
+          "fullName": "lwdwskd"
+        },
+        {
+          "fullName": "dcwsjd"
+        }
+      ]
+    },
+    {
+      "id": "gt9xwq7",
+      "title": "wewe",
+      "date": "0001-11-11",
+      "time": "11:01",
+      "performers": [
+        {
+          "fullName": "Тут будет подходящий исполнитель",
+          "login": "",
+          "serviceName": "dfdf",
+          "status": "Выполнено"
+        }
+      ],
+      "tasks": [
+        {
+          "title": "fdfdf",
+          "responsibleName": "ФИО для 1111",
+          "responsibleLogin": "1111",
+          "deadline": "0001-11-11",
+          "description": "1111",
+          "status": "Не выполнено"
+        }
+      ],
+      "guests": [
+        {
+          "fullName": "dfdfdf"
+        },
+        {
+          "fullName": "fdfd"
+        }
+      ]
+    }
+  ]
+}

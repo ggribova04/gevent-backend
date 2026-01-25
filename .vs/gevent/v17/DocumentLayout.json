@@ -1,0 +1,101 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\79924\\Desktop\\gevent-backend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|c:\\users\\79924\\desktop\\gevent-backend\\gevent.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|solutionrelative:gevent.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|c:\\users\\79924\\desktop\\gevent-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|c:\\users\\79924\\desktop\\gevent-backend\\automapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|solutionrelative:automapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|c:\\users\\79924\\desktop\\gevent-backend\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|c:\\users\\79924\\desktop\\gevent-backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{19CD3A2C-62C3-4414-AF85-AC6D44BE6B80}|gevent.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "gevent.http",
+              "DocumentMoniker": "C:\\Users\\79924\\Desktop\\gevent-backend\\gevent.http",
+              "RelativeDocumentMoniker": "gevent.http",
+              "ToolTip": "C:\\Users\\79924\\Desktop\\gevent-backend\\gevent.http",
+              "RelativeToolTip": "gevent.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2026-01-16T10:33:41.809Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AutoMapper.cs",
+              "DocumentMoniker": "C:\\Users\\79924\\Desktop\\gevent-backend\\AutoMapper.cs",
+              "RelativeDocumentMoniker": "AutoMapper.cs",
+              "ToolTip": "C:\\Users\\79924\\Desktop\\gevent-backend\\AutoMapper.cs",
+              "RelativeToolTip": "AutoMapper.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAA1wAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-16T10:33:37.396Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\79924\\Desktop\\gevent-backend\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\79924\\Desktop\\gevent-backend\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-16T10:33:23.306Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\79924\\Desktop\\gevent-backend\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\79924\\Desktop\\gevent-backend\\Properties\\launchSettings.json",
+              "RelativeToolTip": "Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-16T10:28:21.425Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\79924\\Desktop\\gevent-backend\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\79924\\Desktop\\gevent-backend\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAF8AAAAAAAAAAAAawGwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-16T10:10:04.38Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
