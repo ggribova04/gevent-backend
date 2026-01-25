@@ -1,0 +1,8 @@
+".vs/" 
+"bin/" 
+"obj/" 
+"wwwroot/uploads/" 
+"*.user" 
+"*.suo" 
+"*.cache" 
+"appsettings.Development.json" 
