@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,14 +43,14 @@ public class EventService : IEventService
         _context.Events.Add(entity);
         await _context.SaveChangesAsync();
 
-        if (dto.IdOrganizer == null)
+        if (dto.OrganizerId == null)
             throw new ArgumentException("IdOrganizer не может быть null");
 
         _context.Organizations.Add(new Organization
         {
-            UserId = dto.IdOrganizer.Value,
+            UserId = dto.OrganizerId.Value,
             EventId = entity.Id,
-            IdRole = 1 // организатор
+            IdRole = 1
         });
 
         await _context.SaveChangesAsync();
@@ -80,12 +80,10 @@ public class EventService : IEventService
 
         // Удаляем связанные записи
         var tasks = _context.Tasks.Where(t => t.EventId == id);
-        var services = _context.Services.Where(s => s.EventId == id);
         var guestEvents = _context.EventGuests.Where(g => g.EventId == id);
         var organizations = _context.Organizations.Where(o => o.EventId == id);
 
         _context.Tasks.RemoveRange(await tasks.ToListAsync());
-        _context.Services.RemoveRange(await services.ToListAsync());
         _context.EventGuests.RemoveRange(await guestEvents.ToListAsync());
         _context.Organizations.RemoveRange(await organizations.ToListAsync());
 

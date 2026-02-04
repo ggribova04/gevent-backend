@@ -1,7 +1,7 @@
-﻿public class AddPerformerByLoginDto
+public class AddPerformerByLoginDto
 {
     public string Login { get; set; } = null!;
-    public int IdEvent { get; set; }
+    public int EventId { get; set; }
 }
 
 public class PerformerSearchDto
@@ -12,8 +12,8 @@ public class PerformerSearchDto
 
 public class PerformerChoiceDto
 {
-    public int IdUser { get; set; }
-    public int IdEvent { get; set; }
+    public int UserId { get; set; }
+    public int EventId { get; set; }
 }
 
 public class PerformerDto
@@ -22,8 +22,7 @@ public class PerformerDto
     public string FullName { get; set; } = null!;
     public string Login { get; set; } = null!;
     public string Specialization { get; set; } = null!;
-    public string Status { get; set; } = null!;
-    public int StatusId { get; set; }
+    public string Status { get; set; }
     public DateOnly Date { get; set; }
     public string DateString => Date.ToString("dd.MM.yyyy");
 }

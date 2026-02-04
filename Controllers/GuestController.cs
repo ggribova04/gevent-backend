@@ -39,7 +39,7 @@ public class GuestController : ControllerBase
     public async Task<IActionResult> AddGuest([FromBody] AddGuestRequest request)
     {
         var sessionEventId = GetCurrentEventId();
-        var finalEventId = sessionEventId ?? request.IdEvent;
+        var finalEventId = sessionEventId ?? request.EventId;
 
         if (finalEventId == null || finalEventId == 0)
             return BadRequest("ID мероприятия не найден ни в сессии, ни в параметрах запроса");

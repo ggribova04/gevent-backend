@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -31,9 +31,9 @@ public class AuthService : IAuthService
             FullName = dto.FullName,
             UserName = dto.UserName,
             Email = dto.Email,
-            IdRole = dto.IdRole,
-            Specialization = dto.IdRole == 2 ? dto.Specialization : null,
-            City = dto.IdRole == 2 ? dto.City : null
+            RoleId = dto.RoleId,
+            Specialization = dto.RoleId == 2 ? dto.Specialization : null,
+            City = dto.RoleId == 2 ? dto.City : null
         };
 
         user.PasswordHash = _hasher.HashPassword(user, dto.Password);
@@ -64,7 +64,7 @@ public class AuthService : IAuthService
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, user.IdRole.ToString())
+            new Claim(ClaimTypes.Role, user.RoleId.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -82,7 +82,7 @@ public class AuthService : IAuthService
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             UserName = user.UserName,
             UserId = user.Id,
-            RoleId = user.IdRole
+            RoleId = user.RoleId
         };
     }
 }

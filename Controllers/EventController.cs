@@ -33,7 +33,7 @@ public class EventController : ControllerBase
     public async Task<IActionResult> Create([FromBody] EventDto dto)
     {
         var userId = GetUserId();
-        dto.IdOrganizer = userId;
+        dto.OrganizerId = userId;
 
         // Проверяем, есть ли ID мероприятия в сессии
         var eventId = HttpContext.Session.GetInt32("CurrentEventId");
@@ -64,7 +64,7 @@ public class EventController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] EventDto dto)
     {
-        dto.IdOrganizer = GetUserId();
+        dto.OrganizerId = GetUserId();
         var updated = await _eventService.UpdateEventAsync(dto);
         return updated ? Ok(dto) : NotFound();
     }

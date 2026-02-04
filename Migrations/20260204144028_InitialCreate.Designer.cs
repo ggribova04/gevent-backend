@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace gevent.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250502212811_InitialCreate")]
+    [Migration("20260204144028_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -35,11 +35,13 @@ namespace gevent.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int>("IdStatus")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OrganizerId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<TimeOnly>("Time")
                         .HasColumnType("time without time zone");
@@ -50,8 +52,6 @@ namespace gevent.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IdStatus");
 
                     b.HasIndex("OrganizerId");
 
@@ -73,34 +73,11 @@ namespace gevent.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("EventGuests");
-                });
-
-            modelBuilder.Entity("EventStatus", b =>
-                {
-                    b.Property<int>("IdStatus")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdStatus"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("IdStatus");
-
-                    b.ToTable("EventStatuses");
                 });
 
             modelBuilder.Entity("Organization", b =>
@@ -131,61 +108,7 @@ namespace gevent.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("Permission", b =>
-                {
-                    b.Property<int>("IdPermission")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdPermission"));
-
-                    b.Property<string>("ComponentName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("IdPermission");
-
-                    b.ToTable("Permissions");
-                });
-
             modelBuilder.Entity("Role", b =>
-                {
-                    b.Property<int>("IdRole")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdRole"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("IdRole");
-
-                    b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("RolePermission", b =>
-                {
-                    b.Property<int>("IdRole")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IdPermission")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("CanAccess")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("IdRole", "IdPermission");
-
-                    b.HasIndex("IdPermission");
-
-                    b.ToTable("RolePermissions");
-                });
-
-            modelBuilder.Entity("Service", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -193,29 +116,14 @@ namespace gevent.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IdStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("IdStatus");
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("Services");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Task", b =>
@@ -226,8 +134,8 @@ namespace gevent.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("Deadline")
+                        .HasColumnType("date");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -239,8 +147,10 @@ namespace gevent.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("IdStatus")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -253,27 +163,93 @@ namespace gevent.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("IdStatus");
-
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("TaskStatus", b =>
+            modelBuilder.Entity("Tender", b =>
                 {
-                    b.Property<int>("IdStatus")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdStatus"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Contacts")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.HasKey("IdStatus");
+                    b.Property<DateTime>("Deadline")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.ToTable("TaskStatuses");
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Tenders");
+                });
+
+            modelBuilder.Entity("TenderResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Contacts")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<decimal>("CostService")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("TenderId", "EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("TenderResponses");
                 });
 
             modelBuilder.Entity("User", b =>
@@ -302,9 +278,6 @@ namespace gevent.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<int>("IdRole")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -312,6 +285,9 @@ namespace gevent.Migrations
                     b.Property<string>("PhotoUrl")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Specialization")
                         .HasMaxLength(255)
@@ -327,7 +303,7 @@ namespace gevent.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("IdRole");
+                    b.HasIndex("RoleId");
 
                     b.HasIndex("UserName")
                         .IsUnique();
@@ -337,12 +313,6 @@ namespace gevent.Migrations
 
             modelBuilder.Entity("Event", b =>
                 {
-                    b.HasOne("EventStatus", "Status")
-                        .WithMany("Events")
-                        .HasForeignKey("IdStatus")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("User", "Organizer")
                         .WithMany("Events")
                         .HasForeignKey("OrganizerId")
@@ -350,8 +320,6 @@ namespace gevent.Migrations
                         .IsRequired();
 
                     b.Navigation("Organizer");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("EventGuest", b =>
@@ -359,12 +327,8 @@ namespace gevent.Migrations
                     b.HasOne("Event", "Event")
                         .WithMany("EventGuests")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("User", null)
-                        .WithMany("EventGuests")
-                        .HasForeignKey("UserId");
 
                     b.Navigation("Event");
                 });
@@ -396,52 +360,6 @@ namespace gevent.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RolePermission", b =>
-                {
-                    b.HasOne("Permission", "Permission")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("IdPermission")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Role", "Role")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("IdRole")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("Service", b =>
-                {
-                    b.HasOne("Event", "Event")
-                        .WithMany("Services")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("TaskStatus", "Status")
-                        .WithMany("Services")
-                        .HasForeignKey("IdStatus")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("User", "Supplier")
-                        .WithMany("Services")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Status");
-
-                    b.Navigation("Supplier");
-                });
-
             modelBuilder.Entity("Task", b =>
                 {
                     b.HasOne("User", "Employee")
@@ -456,24 +374,46 @@ namespace gevent.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TaskStatus", "Status")
-                        .WithMany("Tasks")
-                        .HasForeignKey("IdStatus")
+                    b.Navigation("Employee");
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("Tender", b =>
+                {
+                    b.HasOne("Event", "Event")
+                        .WithMany("Tenders")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("TenderResponse", b =>
+                {
+                    b.HasOne("User", "Employee")
+                        .WithMany("TenderResponses")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Tender", "Tender")
+                        .WithMany("Responses")
+                        .HasForeignKey("TenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employee");
 
-                    b.Navigation("Event");
-
-                    b.Navigation("Status");
+                    b.Navigation("Tender");
                 });
 
             modelBuilder.Entity("User", b =>
                 {
                     b.HasOne("Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("IdRole")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -486,48 +426,32 @@ namespace gevent.Migrations
 
                     b.Navigation("Organizations");
 
-                    b.Navigation("Services");
-
                     b.Navigation("Tasks");
-                });
 
-            modelBuilder.Entity("EventStatus", b =>
-                {
-                    b.Navigation("Events");
-                });
-
-            modelBuilder.Entity("Permission", b =>
-                {
-                    b.Navigation("RolePermissions");
+                    b.Navigation("Tenders");
                 });
 
             modelBuilder.Entity("Role", b =>
                 {
                     b.Navigation("Organizations");
 
-                    b.Navigation("RolePermissions");
-
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("TaskStatus", b =>
+            modelBuilder.Entity("Tender", b =>
                 {
-                    b.Navigation("Services");
-
-                    b.Navigation("Tasks");
+                    b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("User", b =>
                 {
-                    b.Navigation("EventGuests");
-
                     b.Navigation("Events");
 
                     b.Navigation("Organizations");
 
-                    b.Navigation("Services");
-
                     b.Navigation("Tasks");
+
+                    b.Navigation("TenderResponses");
                 });
 #pragma warning restore 612, 618
         }
