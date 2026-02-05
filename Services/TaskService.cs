@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 
@@ -6,11 +7,13 @@ public class TaskService : ITaskService
 {
   private readonly ApplicationDbContext _context;
   private readonly IMapper _mapper;
+  private readonly IHubContext<TasksHub> _hubContext;
 
-  public TaskService(ApplicationDbContext context, IMapper mapper)
+  public TaskService(ApplicationDbContext context, IMapper mapper, IHubContext<TasksHub> hubContext)
   {
     _context = context;
     _mapper = mapper;
+    _hubContext = hubContext;
   }
 
   public async Task<List<TaskDto>> GetStep2TasksAsync(int eventId)
@@ -115,6 +118,8 @@ public class TaskService : ITaskService
     _context.Tasks.Update(task);
     await _context.SaveChangesAsync();
 
+    await _hubContext.Clients.All.SendAsync("TasksUpdated");
+
     return dto;
   }
 
@@ -124,7 +129,6 @@ public class TaskService : ITaskService
 
     if (userRoleId == 1)
     {
-      // Администратор: получить все задачи, где он — организатор
       var eventIds = await _context.Events
           .Where(e => e.OrganizerId == userId)
           .Select(e => e.Id)
@@ -187,6 +191,8 @@ public class TaskService : ITaskService
 
     _context.Tasks.Remove(task);
     await _context.SaveChangesAsync();
+    await _hubContext.Clients.All.SendAsync("TasksUpdated");
+
     return true;
   }
 

@@ -69,18 +69,11 @@ public class TaskController : ControllerBase
     return CreateInternal(request, 3);
   }
 
-  [HttpPut("create/step3/update-status")]
+  [HttpPut("tasks-board/update-status")]
   public async Task<IActionResult> UpdateStatus([FromBody] UpdateTaskStatusDto dto)
   {
-    try
-    {
-      var result = await _taskService.UpdateTaskStatusAsync(dto);
-      return Ok(result);
-    }
-    catch (Exception ex)
-    {
-      return BadRequest(new { message = ex.Message });
-    }
+    var result = await _taskService.UpdateTaskStatusAsync(dto);
+    return Ok(result);
   }
 
   [HttpGet("{eventId}/tasks")]

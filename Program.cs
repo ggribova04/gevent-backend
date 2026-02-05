@@ -7,8 +7,11 @@ using System.Reflection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
 
 // Разрешение CORS
 builder.Services.AddCors(options =>
@@ -72,7 +75,11 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddHttpContextAccessor();
 
 // Контроллеры 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+      options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
@@ -92,7 +99,7 @@ app.UseAuthentication(); // Сначала аутентификация
 app.UseAuthorization();  // Затем авторизация
 
 app.MapControllers();
-
+app.MapHub<TasksHub>("/tasksHub");
 
 app.UseStaticFiles(new StaticFileOptions
 {
