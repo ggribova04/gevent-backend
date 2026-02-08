@@ -141,6 +141,10 @@ public class ApplicationDbContext : DbContext
             .WithMany(u => u.TenderResponses)
             .HasForeignKey(tr => tr.EmployeeId)
             .OnDelete(DeleteBehavior.Restrict);
+      entity.Property(tr => tr.Status)
+             .HasConversion<string>()
+             .HasMaxLength(50)
+             .IsRequired();
     });
   }
 }

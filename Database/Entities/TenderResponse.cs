@@ -20,4 +20,7 @@ public class TenderResponse
   public string Contacts { get; set; }
 
   public string Comment { get; set; }
+
+  [Required]
+  public TenderResponseStatus Status { get; set; }
 }
