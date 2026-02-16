@@ -1,4 +1,4 @@
-public enum TenderResponseStatus
+public enum TenderResponseState
 {
   Submitted,     
   RejectedByUser, 

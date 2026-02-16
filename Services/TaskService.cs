@@ -1,4 +1,5 @@
 using AutoMapper;
+using gevent.Database.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
@@ -216,4 +217,23 @@ public class TaskService : ITaskService
 
     return await query.ToListAsync();
   }
+  
+  public async System.Threading.Tasks.Task CreateTaskFromTenderAsync(Tender tender, TenderResponse winner)
+  {
+    var task = new Task
+    {
+      Title = tender.Title,
+      Description = tender.Comment,
+      EventId = tender.EventId,
+      Deadline = tender.Deadline,
+      EmployeeId = winner.EmployeeId,
+      Status = TaskState.NotAccepted
+    };
+
+    _context.Tasks.Add(task);
+    await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TasksUpdated");
+  }
+  
 }

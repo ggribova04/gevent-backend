@@ -8,4 +8,5 @@ public interface ITaskService
   Task<List<TaskDto>> GetAllUserTasksAsync(int userId, int userRoleId);
   Task<bool> DeleteTaskAsync(int taskId);
   Task<List<User>> SearchPerformersAsync(PerformerSearchDto dto);
+  System.Threading.Tasks.Task CreateTaskFromTenderAsync(Tender tender, TenderResponse winner);
 }

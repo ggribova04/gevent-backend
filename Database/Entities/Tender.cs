@@ -23,7 +23,7 @@ public class Tender
   public string ServiceName { get; set; }
 
   [Required]
-  public DateTime Deadline { get; set; }
+  public DateOnly Deadline { get; set; }
 
   [MaxLength(255)]
   public string Contacts { get; set; }

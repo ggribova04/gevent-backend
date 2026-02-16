@@ -22,5 +22,5 @@ public class TenderResponse
   public string Comment { get; set; }
 
   [Required]
-  public TenderResponseStatus Status { get; set; }
+  public TenderResponseState Status { get; set; }
 }

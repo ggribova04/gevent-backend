@@ -67,7 +67,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
-//builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddScoped<ITenderService, TenderService>();
 builder.Services.AddScoped<IEventGuestService, EventGuestService>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
