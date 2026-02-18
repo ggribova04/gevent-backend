@@ -1,15 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using gevent.Database.Enums;
+using Microsoft.AspNetCore.SignalR;
 
 public class TenderService : ITenderService
 {
   private readonly ApplicationDbContext _context;
   private readonly ITaskService _taskService;
+  private readonly IHubContext<TendersHub> _hubContext;
 
-  public TenderService(ApplicationDbContext context, ITaskService taskService)
+  public TenderService(ApplicationDbContext context, ITaskService taskService, IHubContext<TendersHub> hubContext)
   {
     _context = context;
     _taskService = taskService;
+    _hubContext = hubContext;
   }
 
   // 1️⃣ Создание тендера
@@ -29,6 +32,8 @@ public class TenderService : ITenderService
 
     _context.Tenders.Add(tender);
     await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
 
     return tender.Id;
   }
@@ -102,6 +107,8 @@ public class TenderService : ITenderService
 
     _context.TenderResponses.Add(response);
     await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
   // 4️⃣ Отклики на тендер
@@ -122,6 +129,8 @@ public class TenderService : ITenderService
       _context.TenderResponses.Remove(response);
       await _context.SaveChangesAsync();
     }
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
   // 6️⃣ Отметить победителя
@@ -142,6 +151,8 @@ public class TenderService : ITenderService
       r.Status = r.Id == responseId ? TenderResponseState.Won : TenderResponseState.Lost;
 
     await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
   // 7️⃣ Закрытие тендера
@@ -167,5 +178,7 @@ public class TenderService : ITenderService
     }
 
     await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 }

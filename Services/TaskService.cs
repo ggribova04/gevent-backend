@@ -105,6 +105,8 @@ public class TaskService : ITaskService
     _context.Tasks.Add(task);
     await _context.SaveChangesAsync();
 
+    await _hubContext.Clients.All.SendAsync("TasksUpdated");
+
     return true;
   }
 

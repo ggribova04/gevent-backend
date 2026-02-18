@@ -100,6 +100,7 @@ app.UseAuthorization();  // Затем авторизация
 
 app.MapControllers();
 app.MapHub<TasksHub>("/tasksHub");
+app.MapHub<TendersHub>("/tendersHub");
 
 app.UseStaticFiles(new StaticFileOptions
 {
