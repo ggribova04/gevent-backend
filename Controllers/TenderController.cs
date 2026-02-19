@@ -46,6 +46,32 @@ public class TenderController : ControllerBase
     return Ok(responses);
   }
 
+  [HttpGet("{tenderId}/response/{employeeId}")]
+  public async Task<ActionResult<TenderResponseDto?>> GetResponseForEmployee(int tenderId, int employeeId)
+  {
+    var response = await _tenderService.GetResponseForEmployeeAsync(tenderId, employeeId);
+    if (response == null)
+      return NotFound();
+
+    return Ok(response);
+  }
+
+  [HttpPut("{tenderId}/response/{employeeId}")]
+  public async Task<IActionResult> UpdateResponse(int tenderId, int employeeId, [FromBody] CreateTenderResponseRequest request)
+  {
+    await _tenderService.UpdateResponseAsync(tenderId, employeeId, request);
+    return Ok();
+  }
+
+  [HttpPut("{tenderId}")]
+  public async Task<IActionResult> UpdateTender(
+    int tenderId,
+    [FromBody] CreateTenderRequest request)
+  {
+    await _tenderService.UpdateTenderAsync(tenderId, request);
+    return Ok();
+  }
+
   // Удаление отклика
   [HttpDelete("response/{responseId}")]
   public async Task<IActionResult> DeleteResponse(int responseId)

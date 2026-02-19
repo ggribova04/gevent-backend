@@ -61,6 +61,7 @@ public class TenderService : ITenderService
         EventId = t.EventId,
         EventTitle = t.Event.Title,
         EventDate = t.Event.Date,
+        EventTime = t.Event.Time,
         OrganizerEvent = t.Event.Organizer.FullName,
         Contacts = t.Contacts,
         Comment = t.Comment,
@@ -120,7 +121,63 @@ public class TenderService : ITenderService
         .ToListAsync();
   }
 
-  // 5️⃣ Удалить отклик
+  public async Task<TenderResponseDto?> GetResponseForEmployeeAsync(int tenderId, int employeeId)
+  {
+    var response = await _context.TenderResponses
+      .Include(r => r.Employee)
+      .Where(r => r.TenderId == tenderId && r.EmployeeId == employeeId)
+      .Select(r => new TenderResponseDto
+      {
+        Id = r.Id,
+        TenderId = r.TenderId,
+        EmployeeId = r.EmployeeId,
+        EmployeeName = r.Employee.FullName,
+        Status = r.Status.ToString(),
+        CostService = r.CostService,
+        Contacts = r.Contacts,
+        Comment = r.Comment
+      })
+      .FirstOrDefaultAsync();
+
+    return response;
+  }
+
+  // Обновление отклика исполнителя
+  public async System.Threading.Tasks.Task UpdateResponseAsync(int tenderId, int employeeId, CreateTenderResponseRequest request)
+  {
+    var response = await _context.TenderResponses
+      .FirstOrDefaultAsync(r => r.TenderId == tenderId && r.EmployeeId == employeeId);
+
+    if (response == null)
+      throw new InvalidOperationException("Отклик не найден");
+
+    // Обновляем данные
+    response.CostService = request.CostService;
+    response.Contacts = request.Contacts;
+    response.Comment = request.Comment;
+
+    await _context.SaveChangesAsync();
+
+    // Уведомляем всех через SignalR
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
+  }
+
+  public async System.Threading.Tasks.Task UpdateTenderAsync(int tenderId, CreateTenderRequest request)
+  {
+    var tender = await _context.Tenders.FindAsync(tenderId);
+    if (tender == null)
+      throw new Exception("Tender not found");
+
+    tender.Title = request.Title;
+    tender.City = request.City;
+    tender.ServiceName = request.ServiceName;
+    tender.Deadline = request.Deadline;
+    tender.Contacts = request.Contacts;
+    tender.Comment = request.Comment;
+
+    await _context.SaveChangesAsync();
+  }
+
   public async System.Threading.Tasks.Task DeleteResponseAsync(int responseId)
   {
     var response = await _context.TenderResponses.FindAsync(responseId);
