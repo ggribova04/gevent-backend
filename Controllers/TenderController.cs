@@ -30,6 +30,16 @@ public class TenderController : ControllerBase
     return Ok(tenders);
   }
 
+  [HttpGet("{tenderId}")]
+  public async Task<ActionResult<TenderDto?>> GetTender(int tenderId)
+  {
+    var tender = await _tenderService.GetTenderByIdAsync(tenderId);
+    if (tender == null)
+      return NotFound();
+
+    return Ok(tender);
+  }
+
   // Создание отклика на тендер
   [HttpPost("{tenderId}/response/{employeeId}")]
   public async Task<IActionResult> CreateResponse(int tenderId, int employeeId, [FromBody] CreateTenderResponseRequest request)
@@ -40,7 +50,7 @@ public class TenderController : ControllerBase
 
   // Получение всех откликов на тендер
   [HttpGet("{tenderId}/responses")]
-  public async Task<ActionResult<IEnumerable<TenderResponse>>> GetResponses(int tenderId)
+  public async Task<ActionResult<IEnumerable<TenderResponseDto>>> GetResponses(int tenderId)
   {
     var responses = await _tenderService.GetResponsesAsync(tenderId);
     return Ok(responses);
@@ -94,6 +104,14 @@ public class TenderController : ControllerBase
   {
     await _tenderService.CloseTenderAsync(tenderId);
     return Ok();
+  }
+
+  // Удаление тендера
+  [HttpDelete("{tenderId}")]
+  public async Task<IActionResult> DeleteTender(int tenderId)
+  {
+    await _tenderService.DeleteTenderAsync(tenderId);
+    return NoContent();
   }
 }
 

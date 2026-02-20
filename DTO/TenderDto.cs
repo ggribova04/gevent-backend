@@ -46,7 +46,10 @@ public class TenderResponseDto
   public int Id { get; set; }
   public int TenderId { get; set; }
   public int EmployeeId { get; set; }
-  public string EmployeeName { get; set; }
+  public string EmployeeFullName { get; set; }
+  public string EmployeeEmail { get; set; }
+  public string EmployeeSpecialization { get; set; }
+  public string? EmployeeDescription { get; set; }
   public string Status { get; set; }
   public decimal CostService { get; set; }
   public string Contacts { get; set; }
