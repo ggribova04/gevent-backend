@@ -228,51 +228,49 @@ public class TenderService : ITenderService
     await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
-  // 6️⃣ Отметить победителя
-  public async System.Threading.Tasks.Task MarkWinnerAsync(int responseId)
+  public async System.Threading.Tasks.Task CloseTenderAsync(int tenderId, int? winnerResponseId)
   {
-    var response = await _context.TenderResponses
-        .Include(r => r.Tender)
-        .FirstOrDefaultAsync(r => r.Id == responseId);
+    using var transaction = await _context.Database.BeginTransactionAsync();
 
-    if (response == null)
-      throw new InvalidOperationException("Отклик не найден");
-
-    var allResponses = await _context.TenderResponses
-        .Where(r => r.TenderId == response.TenderId)
-        .ToListAsync();
-
-    foreach (var r in allResponses)
-      r.Status = r.Id == responseId ? TenderResponseState.Won : TenderResponseState.Lost;
-
-    await _context.SaveChangesAsync();
-
-    await _hubContext.Clients.All.SendAsync("TendersUpdated");
-  }
-
-  // 7️⃣ Закрытие тендера
-  public async System.Threading.Tasks.Task CloseTenderAsync(int tenderId)
-  {
     var tender = await _context.Tenders
-        .Include(t => t.Responses)
-        .FirstOrDefaultAsync(t => t.Id == tenderId);
+      .Include(t => t.Responses)
+      .FirstOrDefaultAsync(t => t.Id == tenderId);
 
     if (tender == null)
       throw new InvalidOperationException("Тендер не найден");
 
-    var winner = tender.Responses.FirstOrDefault(r => r.Status == TenderResponseState.Won);
+    if (tender.Status != TenderState.Open)
+      throw new InvalidOperationException("Тендер уже закрыт");
 
-    if (winner != null)
+    TenderResponse? winner = null;
+
+    if (winnerResponseId.HasValue)
     {
+      winner = tender.Responses.FirstOrDefault(r => r.Id == winnerResponseId.Value);
+      if (winner == null)
+        throw new InvalidOperationException("Победитель не найден");
+
+      foreach (var response in tender.Responses)
+      {
+        response.Status = response.Id == winnerResponseId
+          ? TenderResponseState.Won
+          : TenderResponseState.Lost;
+      }
+
       tender.Status = TenderState.ClosedWithWinner;
+
       await _taskService.CreateTaskFromTenderAsync(tender, winner);
     }
     else
     {
+      foreach (var response in tender.Responses)
+        response.Status = TenderResponseState.Lost;
+
       tender.Status = TenderState.ClosedWithoutWinner;
     }
 
     await _context.SaveChangesAsync();
+    await transaction.CommitAsync();
 
     await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }

@@ -56,3 +56,8 @@ public class TenderResponseDto
   public string Comment { get; set; }
   public bool IsSelected { get; set; }
 }
+
+public class CloseTenderRequest
+{
+  public int? WinnerResponseId { get; set; }
+}

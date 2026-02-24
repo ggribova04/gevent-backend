@@ -219,13 +219,13 @@ public class TaskService : ITaskService
 
     return await query.ToListAsync();
   }
-  
+
   public async System.Threading.Tasks.Task CreateTaskFromTenderAsync(Tender tender, TenderResponse winner)
   {
     var task = new Task
     {
       Title = tender.Title,
-      Description = tender.Comment,
+      Description = BuildDescription(tender, winner),
       EventId = tender.EventId,
       Deadline = tender.Deadline,
       EmployeeId = winner.EmployeeId,
@@ -233,9 +233,25 @@ public class TaskService : ITaskService
     };
 
     _context.Tasks.Add(task);
-    await _context.SaveChangesAsync();
 
     await _hubContext.Clients.All.SendAsync("TasksUpdated");
   }
-  
+
+  private static string BuildDescription(
+    Tender tender,
+    TenderResponse winner
+  )
+  {
+    return
+      $"""
+       Контакты заказчика:
+       {tender.Contacts}
+
+       Комментарий заказчика:
+       {tender.Comment}
+
+       Стоимость:
+       {winner.CostService}
+       """;
+  }
 }

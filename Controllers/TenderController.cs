@@ -90,19 +90,17 @@ public class TenderController : ControllerBase
     return NoContent();
   }
 
-  // Отметить победителя
-  [HttpPost("response/{responseId}/winner")]
-  public async Task<IActionResult> MarkWinner(int responseId)
-  {
-    await _tenderService.MarkWinnerAsync(responseId);
-    return Ok();
-  }
-
-  // Закрытие тендера
   [HttpPost("{tenderId}/close")]
-  public async Task<IActionResult> CloseTender(int tenderId)
+  public async Task<IActionResult> CloseTender(
+    int tenderId,
+    [FromBody] CloseTenderRequest request
+  )
   {
-    await _tenderService.CloseTenderAsync(tenderId);
+    await _tenderService.CloseTenderAsync(
+      tenderId,
+      request.WinnerResponseId
+    );
+
     return Ok();
   }
 
