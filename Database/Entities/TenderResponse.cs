@@ -23,4 +23,6 @@ public class TenderResponse
 
   [Required]
   public TenderResponseState Status { get; set; }
+
+  public bool IsSelected { get; set; }
 }

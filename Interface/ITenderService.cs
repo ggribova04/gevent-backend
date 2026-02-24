@@ -12,4 +12,5 @@ public interface ITenderService
   System.Threading.Tasks.Task UpdateTenderAsync(int tenderId, CreateTenderRequest request);
   System.Threading.Tasks.Task DeleteTenderAsync(int tenderId);
   System.Threading.Tasks.Task<TenderDto?> GetTenderByIdAsync(int tenderId);
+  System.Threading.Tasks.Task ToggleResponseSelectedAsync(int responseId);
 }

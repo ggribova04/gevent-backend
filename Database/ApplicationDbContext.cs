@@ -145,6 +145,8 @@ public class ApplicationDbContext : DbContext
              .HasConversion<string>()
              .HasMaxLength(50)
              .IsRequired();
+      entity.Property(tr => tr.IsSelected)
+             .HasDefaultValue(false);
     });
   }
 }

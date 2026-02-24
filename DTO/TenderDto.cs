@@ -54,4 +54,5 @@ public class TenderResponseDto
   public decimal CostService { get; set; }
   public string Contacts { get; set; }
   public string Comment { get; set; }
+  public bool IsSelected { get; set; }
 }

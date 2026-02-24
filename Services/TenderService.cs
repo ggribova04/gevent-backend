@@ -113,12 +113,49 @@ public class TenderService : ITenderService
   }
 
   // 4️⃣ Отклики на тендер
-  public async Task<IEnumerable<TenderResponse>> GetResponsesAsync(int tenderId)
+  public async Task<IEnumerable<TenderResponseDto>> GetResponsesAsync(int tenderId)
   {
     return await _context.TenderResponses
-        .Include(r => r.Employee)
-        .Where(r => r.TenderId == tenderId)
-        .ToListAsync();
+      .Where(r => r.TenderId == tenderId)
+      .Select(r => new TenderResponseDto
+      {
+        Id = r.Id,
+        TenderId = r.TenderId,
+
+        EmployeeId = r.EmployeeId,
+        EmployeeFullName = r.Employee.FullName,
+        EmployeeEmail = r.Employee.Email,
+        EmployeeSpecialization = r.Employee.Specialization,
+        EmployeeDescription = r.Employee.Description,
+
+        Status = r.Status.ToString(),
+        CostService = r.CostService,
+        Contacts = r.Contacts,
+        Comment = r.Comment,
+        IsSelected = r.IsSelected
+      })
+      .ToListAsync();
+  }
+
+  public async Task<TenderDto?> GetTenderByIdAsync(int tenderId)
+  {
+    var tender = await _context.Tenders
+        .Include(t => t.Event)
+        .FirstOrDefaultAsync(t => t.Id == tenderId);
+
+    if (tender == null) return null;
+
+    return new TenderDto
+    {
+      Id = tender.Id,
+      Title = tender.Title,
+      City = tender.City,
+      EventTitle = tender.Event.Title,
+      EventTime = tender.Event.Time,
+      EventDate = tender.Event.Date,
+      Deadline = tender.Deadline,
+      Status = tender.Status
+    };
   }
 
   public async Task<TenderResponseDto?> GetResponseForEmployeeAsync(int tenderId, int employeeId)
@@ -131,7 +168,7 @@ public class TenderService : ITenderService
         Id = r.Id,
         TenderId = r.TenderId,
         EmployeeId = r.EmployeeId,
-        EmployeeName = r.Employee.FullName,
+        EmployeeFullName = r.Employee.FullName,
         Status = r.Status.ToString(),
         CostService = r.CostService,
         Contacts = r.Contacts,
@@ -158,7 +195,6 @@ public class TenderService : ITenderService
 
     await _context.SaveChangesAsync();
 
-    // Уведомляем всех через SignalR
     await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
@@ -166,7 +202,7 @@ public class TenderService : ITenderService
   {
     var tender = await _context.Tenders.FindAsync(tenderId);
     if (tender == null)
-      throw new Exception("Tender not found");
+      throw new Exception("Тендер не найден");
 
     tender.Title = request.Title;
     tender.City = request.City;
@@ -176,6 +212,8 @@ public class TenderService : ITenderService
     tender.Comment = request.Comment;
 
     await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
   public async System.Threading.Tasks.Task DeleteResponseAsync(int responseId)
@@ -236,6 +274,34 @@ public class TenderService : ITenderService
 
     await _context.SaveChangesAsync();
 
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
+  }
+
+  public async System.Threading.Tasks.Task DeleteTenderAsync(int tenderId)
+  {
+    var tender = await _context.Tenders
+    .FirstOrDefaultAsync(t => t.Id == tenderId);
+
+    if (tender == null)
+      throw new KeyNotFoundException();
+
+    _context.Tenders.Remove(tender);
+    await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
+  }
+
+  public async System.Threading.Tasks.Task ToggleResponseSelectedAsync(int responseId)
+  {
+    var response = await _context.TenderResponses
+      .FirstOrDefaultAsync(r => r.Id == responseId);
+
+    if (response == null)
+      throw new InvalidOperationException("Отклик не найден");
+
+    response.IsSelected = !response.IsSelected;
+
+    await _context.SaveChangesAsync();
     await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 }

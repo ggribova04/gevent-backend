@@ -113,5 +113,12 @@ public class TenderController : ControllerBase
     await _tenderService.DeleteTenderAsync(tenderId);
     return NoContent();
   }
+
+  [HttpPost("response/{responseId}/select")]
+  public async Task<IActionResult> ToggleResponseSelected(int responseId)
+  {
+    await _tenderService.ToggleResponseSelectedAsync(responseId);
+    return Ok();
+  }
 }
 
