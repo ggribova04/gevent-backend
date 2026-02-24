@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -8,11 +9,15 @@ using System.Security.Claims;
 public class TenderController : ControllerBase
 {
   private readonly ITenderService _tenderService;
+  private readonly IHttpContextAccessor _httpContext;
 
-  public TenderController(ITenderService tenderService)
+  public TenderController(ITenderService tenderService, IHttpContextAccessor httpContext)
   {
     _tenderService = tenderService;
+    _httpContext = httpContext;
   }
+
+  private int GetUserId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
   // Создание тендера
   [HttpPost]
@@ -22,11 +27,12 @@ public class TenderController : ControllerBase
     return Ok(id);
   }
 
-  // Получение тендеров для исполнителя
-  [HttpGet("employee/{employeeId}")]
-  public async Task<ActionResult<IEnumerable<TenderDto>>> GetTendersForEmployee(int employeeId)
+  [HttpGet]
+  public async Task<IActionResult> GetTenders()
   {
-    var tenders = await _tenderService.GetTendersForEmployeeAsync(employeeId);
+    var userId = GetUserId();
+
+    var tenders = await _tenderService.GetTendersByUserAsync(userId);
     return Ok(tenders);
   }
 

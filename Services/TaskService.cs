@@ -232,8 +232,6 @@ public class TaskService : ITaskService
       Status = TaskState.NotAccepted
     };
 
-    _context.Tasks.Add(task);
-
     await _hubContext.Clients.All.SendAsync("TasksUpdated");
   }
 

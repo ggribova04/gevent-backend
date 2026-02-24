@@ -1,7 +1,6 @@
 public interface ITenderService
 {
   System.Threading.Tasks.Task<int> CreateTenderAsync(CreateTenderRequest request);
-  System.Threading.Tasks.Task<IEnumerable<TenderDto>> GetTendersForEmployeeAsync(int employeeId);
   System.Threading.Tasks.Task CreateResponseAsync(int tenderId, int employeeId, CreateTenderResponseRequest request);
   System.Threading.Tasks.Task<IEnumerable<TenderResponseDto>> GetResponsesAsync(int tenderId);
   System.Threading.Tasks.Task DeleteResponseAsync(int responseId);
@@ -12,4 +11,5 @@ public interface ITenderService
   System.Threading.Tasks.Task DeleteTenderAsync(int tenderId);
   System.Threading.Tasks.Task<TenderDto?> GetTenderByIdAsync(int tenderId);
   System.Threading.Tasks.Task ToggleResponseSelectedAsync(int responseId);
+  System.Threading.Tasks.Task<IEnumerable<TenderDto>> GetTendersByUserAsync(int userId);
 }

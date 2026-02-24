@@ -38,19 +38,42 @@ public class TenderService : ITenderService
     return tender.Id;
   }
 
-  // 2️⃣ Тендеры для исполнителя (канбан)
-  public async Task<IEnumerable<TenderDto>> GetTendersForEmployeeAsync(int employeeId)
+  public async Task<IEnumerable<TenderDto>> GetTendersByUserAsync(int userId)
   {
-    var tenders = await _context.Tenders
-        .Include(t => t.Event)
-            .ThenInclude(e => e.Organizer)
-        .Include(t => t.Responses)
-        .ToListAsync();
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+    if (user == null) throw new InvalidOperationException("Пользователь не найден");
 
+    int roleId = user.RoleId;
+
+    List<Tender> tenders;
+
+    if (roleId == 1) // администратор
+    {
+      var adminEventIds = await _context.Events
+          .Where(e => e.OrganizerId == userId)
+          .Select(e => e.Id)
+          .ToListAsync();
+
+      tenders = await _context.Tenders
+          .Where(t => adminEventIds.Contains(t.EventId))
+          .Include(t => t.Event)
+              .ThenInclude(e => e.Organizer)
+          .Include(t => t.Responses)
+          .ToListAsync();
+    }
+    else // исполнители видят все
+    {
+      tenders = await _context.Tenders
+          .Include(t => t.Event)
+              .ThenInclude(e => e.Organizer)
+          .Include(t => t.Responses)
+          .ToListAsync();
+    }
+
+    // Вычисляем ViewStatus для текущего пользователя
     return tenders.Select(t =>
     {
-      var response = t.Responses.FirstOrDefault(r => r.EmployeeId == employeeId);
-
+      var response = t.Responses.FirstOrDefault(r => r.EmployeeId == userId);
       return new TenderDto
       {
         Id = t.Id,
