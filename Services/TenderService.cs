@@ -61,19 +61,31 @@ public class TenderService : ITenderService
           .Include(t => t.Responses)
           .ToListAsync();
     }
-    else // исполнители видят все
+    else // исполнитель
     {
       tenders = await _context.Tenders
-          .Include(t => t.Event)
-              .ThenInclude(e => e.Organizer)
-          .Include(t => t.Responses)
-          .ToListAsync();
+        .Include(t => t.Event)
+        .ThenInclude(e => e.Organizer)
+        .Include(t => t.Responses)
+        .Where(t =>
+          t.Status == TenderState.Open ||
+          t.Responses.Any(r => r.EmployeeId == userId)
+        )
+        .ToListAsync();
     }
 
-    // Вычисляем ViewStatus для текущего пользователя
+    // Получаем список всех задач текущего пользователя
+    var userTasks = await _context.Tasks
+      .Where(task => task.EmployeeId == userId)
+      .Select(task => task.EventId)
+      .ToListAsync();
+
+    // Вычисляем ViewStatus и флаг taskAccepted
     return tenders.Select(t =>
     {
       var response = t.Responses.FirstOrDefault(r => r.EmployeeId == userId);
+      bool taskAccepted = userTasks.Contains(t.EventId);
+
       return new TenderDto
       {
         Id = t.Id,
@@ -89,25 +101,26 @@ public class TenderService : ITenderService
         Contacts = t.Contacts,
         Comment = t.Comment,
         Status = t.Status,
-        ViewStatus = ResolveViewStatus(t, response)
+        ViewStatus = ResolveViewStatus(t, response),
+        TaskAccepted = taskAccepted
       };
     });
   }
 
   private static TenderViewStatus ResolveViewStatus(Tender tender, TenderResponse? response)
   {
-    if (tender.Status != TenderState.Open)
-      return TenderViewStatus.ClosedOrRejected;
-
-    if (response == null)
-      return TenderViewStatus.New;
-
-    return response.Status switch
+    if (tender.Status == TenderState.Open)
     {
-      TenderResponseState.Submitted => TenderViewStatus.WaitingForResult,
-      TenderResponseState.Won => TenderViewStatus.Won,
-      _ => TenderViewStatus.ClosedOrRejected
-    };
+      if (response == null)
+        return TenderViewStatus.New;
+
+      return TenderViewStatus.WaitingForResult;
+    }
+
+    if (response?.Status == TenderResponseState.Won)
+      return TenderViewStatus.Won;
+
+    return TenderViewStatus.ClosedOrRejected;
   }
 
   // 3️⃣ Отклик исполнителя
@@ -281,8 +294,6 @@ public class TenderService : ITenderService
       }
 
       tender.Status = TenderState.ClosedWithWinner;
-
-      await _taskService.CreateTaskFromTenderAsync(tender, winner);
     }
     else
     {

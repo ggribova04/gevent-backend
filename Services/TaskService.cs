@@ -220,19 +220,35 @@ public class TaskService : ITaskService
     return await query.ToListAsync();
   }
 
-  public async System.Threading.Tasks.Task CreateTaskFromTenderAsync(Tender tender, TenderResponse winner)
+  public async System.Threading.Tasks.Task CreateTaskFromTenderAsync(int tenderId, int employeeId)
   {
+    var response = await _context.TenderResponses
+      .Include(r => r.Tender)
+      .FirstOrDefaultAsync(r =>
+        r.TenderId == tenderId &&
+        r.EmployeeId == employeeId &&
+        r.Status == TenderResponseState.Won);
+
+    if (response == null)
+      throw new InvalidOperationException("Вы не победитель этого конкурса");
+
+    var tender = response.Tender;
+
     var task = new Task
     {
       Title = tender.Title,
-      Description = BuildDescription(tender, winner),
+      Description = BuildDescription(tender, response),
       EventId = tender.EventId,
       Deadline = tender.Deadline,
-      EmployeeId = winner.EmployeeId,
-      Status = TaskState.NotAccepted
+      EmployeeId = employeeId,
+      Status = TaskState.InProgress
     };
 
+    _context.Tasks.Add(task);
+    await _context.SaveChangesAsync();
+
     await _hubContext.Clients.All.SendAsync("TasksUpdated");
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
   private static string BuildDescription(

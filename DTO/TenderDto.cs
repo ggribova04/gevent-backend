@@ -21,6 +21,7 @@ public class TenderDto
   public TenderState Status { get; set; }
 
   public TenderViewStatus ViewStatus { get; set; }
+  public bool TaskAccepted { get; set; }
 }
 
 public class CreateTenderRequest

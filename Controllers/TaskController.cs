@@ -10,13 +10,15 @@ using gevent.Database.Enums;
 public class TaskController : ControllerBase
 {
   private readonly ITaskService _taskService;
-  private readonly IHttpContextAccessor _httpContextAccessor;
+  private readonly IHttpContextAccessor _httpContext;
 
-  public TaskController(ITaskService taskService, IHttpContextAccessor httpContextAccessor)
+  public TaskController(ITaskService taskService, IHttpContextAccessor httpContext)
   {
     _taskService = taskService;
-    _httpContextAccessor = httpContextAccessor;
+    _httpContext = httpContext;
   }
+
+  private int GetUserId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
   private int? GetCurrentEventId()
   {
@@ -131,6 +133,22 @@ public class TaskController : ControllerBase
       }));
     }
     catch (Exception ex)
+    {
+      return BadRequest(ex.Message);
+    }
+  }
+
+  [HttpPost("{tenderId}/accept")]
+  public async Task<IActionResult> AcceptTaskFromTender(int tenderId)
+  {
+    var employeeId = GetUserId();
+
+    try
+    {
+      await _taskService.CreateTaskFromTenderAsync(tenderId, employeeId);
+      return Ok();
+    }
+    catch (InvalidOperationException ex)
     {
       return BadRequest(ex.Message);
     }
