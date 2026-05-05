@@ -1,4 +1,5 @@
 using AutoMapper;
+using gevent.Database.Entities;
 using gevent.Database.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -8,13 +9,15 @@ public class TaskService : ITaskService
 {
   private readonly ApplicationDbContext _context;
   private readonly IMapper _mapper;
-  private readonly IHubContext<TasksHub> _hubContext;
+  private readonly IHubContext<TasksHub> _hubContextTasks;
+  private readonly IHubContext<TendersHub> _hubContextTenders;
 
-  public TaskService(ApplicationDbContext context, IMapper mapper, IHubContext<TasksHub> hubContext)
+  public TaskService(ApplicationDbContext context, IMapper mapper, IHubContext<TasksHub> hubContextTasks, IHubContext<TendersHub> hubContextTenders)
   {
     _context = context;
     _mapper = mapper;
-    _hubContext = hubContext;
+    _hubContextTasks = hubContextTasks;
+    _hubContextTenders = hubContextTenders;
   }
 
   public async Task<List<TaskDto>> GetStep2TasksAsync(int eventId)
@@ -105,7 +108,7 @@ public class TaskService : ITaskService
     _context.Tasks.Add(task);
     await _context.SaveChangesAsync();
 
-    await _hubContext.Clients.All.SendAsync("TasksUpdated");
+    await _hubContextTasks.Clients.All.SendAsync("TasksUpdated");
 
     return true;
   }
@@ -121,28 +124,35 @@ public class TaskService : ITaskService
     _context.Tasks.Update(task);
     await _context.SaveChangesAsync();
 
-    await _hubContext.Clients.All.SendAsync("TasksUpdated");
+    await _hubContextTasks.Clients.All.SendAsync("TasksUpdated");
 
     return dto;
   }
 
   public async Task<List<TaskDto>> GetAllUserTasksAsync(int userId, int userRoleId)
   {
+    var hiddenTaskIds = await _context.UserTaskVisibilities
+      .Where(x => x.UserId == userId)
+      .Select(x => x.TaskId)
+      .ToListAsync();
+
     var result = new List<TaskDto>();
 
     if (userRoleId == 1)
     {
       var eventIds = await _context.Events
-          .Where(e => e.OrganizerId == userId)
-          .Select(e => e.Id)
-          .ToListAsync();
+        .Where(e => e.OrganizerId == userId)
+        .Select(e => e.Id)
+        .ToListAsync();
 
       var employeeTasks = await _context.Tasks
-          .Where(t => eventIds.Contains(t.EventId))
-          .Include(t => t.Employee)
-          .Include(t => t.Event)
-            .ThenInclude(e => e.Organizer)
-          .ToListAsync();
+        .Where(t =>
+          eventIds.Contains(t.EventId) &&
+          !hiddenTaskIds.Contains(t.Id))
+        .Include(t => t.Employee)
+        .Include(t => t.Event)
+          .ThenInclude(e => e.Organizer)
+        .ToListAsync();
 
       result.AddRange(employeeTasks.Select(t => new TaskDto
       {
@@ -160,15 +170,16 @@ public class TaskService : ITaskService
         Status = t.Status.ToString()
       }));
     }
-
-    else if (userRoleId == 3 || userRoleId == 2)
+    else if (userRoleId == 2 || userRoleId == 3)
     {
       var employeeTasks = await _context.Tasks
-          .Where(t => t.EmployeeId == userId)
-          .Include(t => t.Employee)
-          .Include(t => t.Event)
-            .ThenInclude(e => e.Organizer)
-          .ToListAsync();
+        .Where(t =>
+          t.EmployeeId == userId &&
+          !hiddenTaskIds.Contains(t.Id))
+        .Include(t => t.Employee)
+        .Include(t => t.Event)
+          .ThenInclude(e => e.Organizer)
+        .ToListAsync();
 
       result.AddRange(employeeTasks.Select(t => new TaskDto
       {
@@ -184,7 +195,29 @@ public class TaskService : ITaskService
         Status = t.Status.ToString(),
       }));
     }
+
     return result;
+  }
+
+  public async System.Threading.Tasks.Task HideTaskAsync(int taskId, int userId)
+  {
+    bool alreadyHidden = await _context.UserTaskVisibilities
+      .AnyAsync(x => x.UserId == userId && x.TaskId == taskId);
+
+    if (alreadyHidden)
+      return;
+
+    var hiddenTask = new UserTaskVisibility
+    {
+      UserId = userId,
+      TaskId = taskId
+    };
+
+    _context.UserTaskVisibilities.Add(hiddenTask);
+
+    await _context.SaveChangesAsync();
+
+    await _hubContextTasks.Clients.All.SendAsync("TasksUpdated");
   }
 
   public async Task<bool> DeleteTaskAsync(int taskId)
@@ -194,7 +227,7 @@ public class TaskService : ITaskService
 
     _context.Tasks.Remove(task);
     await _context.SaveChangesAsync();
-    await _hubContext.Clients.All.SendAsync("TasksUpdated");
+    await _hubContextTasks.Clients.All.SendAsync("TasksUpdated");
 
     return true;
   }
@@ -239,6 +272,7 @@ public class TaskService : ITaskService
       Title = tender.Title,
       Description = BuildDescription(tender, response),
       EventId = tender.EventId,
+      TenderId = tender.Id,
       Deadline = tender.Deadline,
       EmployeeId = employeeId,
       Status = TaskState.InProgress
@@ -247,8 +281,8 @@ public class TaskService : ITaskService
     _context.Tasks.Add(task);
     await _context.SaveChangesAsync();
 
-    await _hubContext.Clients.All.SendAsync("TasksUpdated");
-    await _hubContext.Clients.All.SendAsync("TendersUpdated");
+    await _hubContextTasks.Clients.All.SendAsync("TasksUpdated");
+    await _hubContextTenders.Clients.All.SendAsync("TendersUpdated");
   }
 
   private static string BuildDescription(

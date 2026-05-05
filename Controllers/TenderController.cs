@@ -124,5 +124,33 @@ public class TenderController : ControllerBase
     await _tenderService.ToggleResponseSelectedAsync(responseId);
     return Ok();
   }
+
+  [HttpDelete("{tenderId}/cancel")]
+  public async Task<IActionResult> Cancel(int tenderId)
+  {
+    var userId = GetUserId();
+    await _tenderService.CancelParticipationAsync(tenderId, userId);
+    return NoContent();
+  }
+
+  [HttpPost("{tenderId}/reject")]
+  public async Task<IActionResult> Reject(int tenderId)
+  {
+    var userId = GetUserId();
+
+    await _tenderService.RejectTenderAsync(tenderId, userId);
+
+    return NoContent();
+  }
+
+  [HttpPost("{tenderId}/hide")]
+  public async Task<IActionResult> Hide(int tenderId)
+  {
+    var userId = GetUserId();
+
+    await _tenderService.HideTenderAsync(tenderId, userId);
+
+    return NoContent();
+  }
 }
 

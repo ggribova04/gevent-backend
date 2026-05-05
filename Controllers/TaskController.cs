@@ -153,5 +153,15 @@ public class TaskController : ControllerBase
       return BadRequest(ex.Message);
     }
   }
+
+  [HttpPost("tasks/{taskId}/hide")]
+  public async Task<IActionResult> HideTask(int taskId)
+  {
+    int userId = GetUserId();
+
+    await _taskService.HideTaskAsync(taskId, userId);
+
+    return Ok();
+  }
 }
 

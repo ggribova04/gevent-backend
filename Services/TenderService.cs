@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
+using gevent.Database.Entities;
 using gevent.Database.Enums;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 public class TenderService : ITenderService
 {
@@ -15,7 +16,6 @@ public class TenderService : ITenderService
     _hubContext = hubContext;
   }
 
-  // 1️⃣ Создание тендера
   public async Task<int> CreateTenderAsync(CreateTenderRequest request)
   {
     var tender = new Tender
@@ -40,75 +40,108 @@ public class TenderService : ITenderService
 
   public async Task<IEnumerable<TenderDto>> GetTendersByUserAsync(int userId)
   {
-    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-    if (user == null) throw new InvalidOperationException("Пользователь не найден");
+    var user = await _context.Users
+      .FirstOrDefaultAsync(u => u.Id == userId);
+
+    if (user == null)
+      throw new InvalidOperationException("Пользователь не найден");
 
     int roleId = user.RoleId;
 
     List<Tender> tenders;
 
-    if (roleId == 1) // администратор
+    if (roleId == 1)
     {
       var adminEventIds = await _context.Events
-          .Where(e => e.OrganizerId == userId)
-          .Select(e => e.Id)
-          .ToListAsync();
+        .Where(e => e.OrganizerId == userId)
+        .Select(e => e.Id)
+        .ToListAsync();
 
       tenders = await _context.Tenders
-          .Where(t => adminEventIds.Contains(t.EventId))
-          .Include(t => t.Event)
-              .ThenInclude(e => e.Organizer)
-          .Include(t => t.Responses)
-          .ToListAsync();
-    }
-    else // исполнитель
-    {
-      tenders = await _context.Tenders
+        .Where(t => adminEventIds.Contains(t.EventId))
         .Include(t => t.Event)
-        .ThenInclude(e => e.Organizer)
+          .ThenInclude(e => e.Organizer)
         .Include(t => t.Responses)
-        .Where(t =>
-          t.Status == TenderState.Open ||
-          t.Responses.Any(r => r.EmployeeId == userId)
-        )
         .ToListAsync();
     }
 
-    // Получаем список всех задач текущего пользователя
-    var userTasks = await _context.Tasks
-      .Where(task => task.EmployeeId == userId)
-      .Select(task => task.EventId)
+    else
+    {
+      tenders = await _context.Tenders
+        .Include(t => t.Event)
+          .ThenInclude(e => e.Organizer)
+        .Include(t => t.Responses)
+        .Where(t =>
+          t.Status == TenderState.Open ||
+          t.Responses.Any(r => r.EmployeeId == userId))
+        .ToListAsync();
+    }
+
+    var userTaskTenderIds = await _context.Tasks
+      .Where(task =>
+        task.EmployeeId == userId &&
+        task.TenderId != null)
+      .Select(task => task.TenderId!.Value)
       .ToListAsync();
 
-    // Вычисляем ViewStatus и флаг taskAccepted
-    return tenders.Select(t =>
-    {
-      var response = t.Responses.FirstOrDefault(r => r.EmployeeId == userId);
-      bool taskAccepted = userTasks.Contains(t.EventId);
+    var preferences = await _context.UserTenderPreferences
+      .Where(x => x.UserId == userId)
+      .ToListAsync();
 
-      return new TenderDto
+    var result = tenders
+      .Select(t =>
       {
-        Id = t.Id,
-        Title = t.Title,
-        City = t.City,
-        ServiceName = t.ServiceName,
-        Deadline = t.Deadline,
-        EventId = t.EventId,
-        EventTitle = t.Event.Title,
-        EventDate = t.Event.Date,
-        EventTime = t.Event.Time,
-        OrganizerEvent = t.Event.Organizer.FullName,
-        Contacts = t.Contacts,
-        Comment = t.Comment,
-        Status = t.Status,
-        ViewStatus = ResolveViewStatus(t, response),
-        TaskAccepted = taskAccepted
-      };
-    });
+        var response = t.Responses
+          .FirstOrDefault(r => r.EmployeeId == userId);
+
+        var preference = preferences
+          .FirstOrDefault(x => x.TenderId == t.Id);
+
+        if (preference?.IsHidden == true)
+          return null;
+
+        bool taskAccepted = userTaskTenderIds.Contains(t.Id);
+
+        return new TenderDto
+        {
+          Id = t.Id,
+          Title = t.Title,
+          City = t.City,
+          ServiceName = t.ServiceName,
+          Deadline = t.Deadline,
+          EventId = t.EventId,
+          EventTitle = t.Event.Title,
+          EventDate = t.Event.Date,
+          EventTime = t.Event.Time,
+          OrganizerEvent = t.Event.Organizer.FullName,
+          Contacts = t.Contacts,
+          Comment = t.Comment,
+          Status = t.Status,
+
+          ViewStatus = ResolveViewStatus(
+            t,
+            response,
+            preference
+          ),
+
+          TaskAccepted = taskAccepted
+        };
+      })
+      .Where(x => x != null)
+      .Cast<TenderDto>()
+      .ToList();
+
+    return result;
   }
 
-  private static TenderViewStatus ResolveViewStatus(Tender tender, TenderResponse? response)
+  private static TenderViewStatus ResolveViewStatus(
+  Tender tender,
+  TenderResponse? response,
+  UserTenderPreference? preference)
   {
+    if (preference?.IsRejected == true)
+      return TenderViewStatus.ClosedOrRejected;
+
     if (tender.Status == TenderState.Open)
     {
       if (response == null)
@@ -123,7 +156,6 @@ public class TenderService : ITenderService
     return TenderViewStatus.ClosedOrRejected;
   }
 
-  // 3️⃣ Отклик исполнителя
   public async System.Threading.Tasks.Task CreateResponseAsync(int tenderId, int employeeId, CreateTenderResponseRequest request)
   {
     var exists = await _context.TenderResponses
@@ -148,7 +180,6 @@ public class TenderService : ITenderService
     await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 
-  // 4️⃣ Отклики на тендер
   public async Task<IEnumerable<TenderResponseDto>> GetResponsesAsync(int tenderId)
   {
     return await _context.TenderResponses
@@ -215,7 +246,6 @@ public class TenderService : ITenderService
     return response;
   }
 
-  // Обновление отклика исполнителя
   public async System.Threading.Tasks.Task UpdateResponseAsync(int tenderId, int employeeId, CreateTenderResponseRequest request)
   {
     var response = await _context.TenderResponses
@@ -224,7 +254,6 @@ public class TenderService : ITenderService
     if (response == null)
       throw new InvalidOperationException("Отклик не найден");
 
-    // Обновляем данные
     response.CostService = request.CostService;
     response.Contacts = request.Contacts;
     response.Comment = request.Comment;
@@ -334,6 +363,78 @@ public class TenderService : ITenderService
     response.IsSelected = !response.IsSelected;
 
     await _context.SaveChangesAsync();
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
+  }
+
+  public async System.Threading.Tasks.Task CancelParticipationAsync(int tenderId, int employeeId)
+  {
+    var response = await _context.TenderResponses
+        .FirstOrDefaultAsync(r =>
+            r.TenderId == tenderId &&
+            r.EmployeeId == employeeId);
+
+    if (response != null)
+    {
+      _context.TenderResponses.Remove(response);
+      await _context.SaveChangesAsync();
+    }
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
+  }
+
+  public async System.Threading.Tasks.Task RejectTenderAsync(int tenderId, int userId)
+  {
+    var preference = await _context.UserTenderPreferences
+      .FirstOrDefaultAsync(x =>
+        x.UserId == userId &&
+        x.TenderId == tenderId);
+
+    if (preference == null)
+    {
+      preference = new UserTenderPreference
+      {
+        UserId = userId,
+        TenderId = tenderId,
+        IsRejected = true
+      };
+
+      _context.UserTenderPreferences.Add(preference);
+    }
+    else
+    {
+      preference.IsRejected = true;
+    }
+
+    await _context.SaveChangesAsync();
+
+    await _hubContext.Clients.All.SendAsync("TendersUpdated");
+  }
+
+  public async System.Threading.Tasks.Task HideTenderAsync(int tenderId, int userId)
+  {
+    var preference = await _context.UserTenderPreferences
+      .FirstOrDefaultAsync(x =>
+        x.UserId == userId &&
+        x.TenderId == tenderId);
+
+    if (preference == null)
+    {
+      preference = new UserTenderPreference
+      {
+        UserId = userId,
+        TenderId = tenderId,
+        IsHidden = true
+      };
+
+      _context.UserTenderPreferences.Add(preference);
+    }
+    else
+    {
+      preference.IsHidden = true;
+    }
+
+    await _context.SaveChangesAsync();
+
     await _hubContext.Clients.All.SendAsync("TendersUpdated");
   }
 }

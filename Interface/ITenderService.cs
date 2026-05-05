@@ -12,4 +12,7 @@ public interface ITenderService
   System.Threading.Tasks.Task<TenderDto?> GetTenderByIdAsync(int tenderId);
   System.Threading.Tasks.Task ToggleResponseSelectedAsync(int responseId);
   System.Threading.Tasks.Task<IEnumerable<TenderDto>> GetTendersByUserAsync(int userId);
+  System.Threading.Tasks.Task CancelParticipationAsync(int tenderId, int employeeId);
+  System.Threading.Tasks.Task RejectTenderAsync(int tenderId, int userId);
+  System.Threading.Tasks.Task HideTenderAsync(int tenderId, int userId);
 }

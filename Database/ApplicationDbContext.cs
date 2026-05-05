@@ -1,3 +1,4 @@
+using gevent.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 public class ApplicationDbContext : DbContext
@@ -12,6 +13,8 @@ public class ApplicationDbContext : DbContext
   public DbSet<Task> Tasks { get; set; }
   public DbSet<Tender> Tenders { get; set; }
   public DbSet<TenderResponse> TenderResponses { get; set; }
+  public DbSet<UserTaskVisibility> UserTaskVisibilities { get; set; }
+  public DbSet<UserTenderPreference> UserTenderPreferences { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
@@ -112,6 +115,10 @@ public class ApplicationDbContext : DbContext
             .WithMany(u => u.Tasks)
             .HasForeignKey(t => t.EmployeeId)
             .OnDelete(DeleteBehavior.Restrict);
+      entity.HasOne(t => t.Tender)
+            .WithMany()
+            .HasForeignKey(t => t.TenderId)
+            .OnDelete(DeleteBehavior.SetNull);
     });
 
     // Tender Table
@@ -147,6 +154,44 @@ public class ApplicationDbContext : DbContext
              .IsRequired();
       entity.Property(tr => tr.IsSelected)
              .HasDefaultValue(false);
+    });
+
+    // UserTaskVisibility Table
+    modelBuilder.Entity<UserTaskVisibility>(entity =>
+    {
+      entity.HasKey(x => x.Id);
+
+      entity.HasIndex(x => new { x.UserId, x.TaskId })
+            .IsUnique();
+
+      entity.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+      entity.HasOne(x => x.Task)
+            .WithMany()
+            .HasForeignKey(x => x.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+    });
+
+    // UserTenderPreference Table
+    modelBuilder.Entity<UserTenderPreference>(entity =>
+    {
+      entity.HasKey(x => x.Id);
+
+      entity.HasIndex(x => new { x.UserId, x.TenderId })
+            .IsUnique();
+
+      entity.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+      entity.HasOne(x => x.Tender)
+            .WithMany()
+            .HasForeignKey(x => x.TenderId)
+            .OnDelete(DeleteBehavior.Cascade);
     });
   }
 }

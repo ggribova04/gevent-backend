@@ -24,4 +24,7 @@ public class Task
 
   [Required]
   public TaskState Status { get; set; }
+
+  public int? TenderId { get; set; }
+  public Tender? Tender { get; set; }
 }

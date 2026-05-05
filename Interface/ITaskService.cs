@@ -9,4 +9,5 @@ public interface ITaskService
   Task<bool> DeleteTaskAsync(int taskId);
   Task<List<User>> SearchPerformersAsync(PerformerSearchDto dto);
   System.Threading.Tasks.Task CreateTaskFromTenderAsync(int tenderId, int employeeId);
+  System.Threading.Tasks.Task HideTaskAsync(int taskId, int userId);
 }
