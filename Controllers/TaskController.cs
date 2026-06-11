@@ -25,7 +25,7 @@ public class TaskController : ControllerBase
     return HttpContext.Session.GetInt32("CurrentEventId");
   }
 
-  private async Task<IActionResult> CreateInternal(TaskCreateRequest request, int roleId)
+  private async Task<IActionResult> CreateInternal(TaskCreateRequest request, params int[] allowedRoleIds)
   {
     var sessionEventId = GetCurrentEventId();
     var finalEventId = sessionEventId ?? request.EventId;
@@ -42,7 +42,7 @@ public class TaskController : ControllerBase
       Status = TaskState.NotAccepted.ToString()
     };
 
-    var success = await _taskService.CreateTaskAsync(request.EmployeeLogin, roleId, dto);
+    var success = await _taskService.CreateTaskAsync(request.EmployeeLogin, allowedRoleIds, dto);
     return success ? Ok() : BadRequest("Пользователь не найден или роль неверна");
   }
 
@@ -68,7 +68,7 @@ public class TaskController : ControllerBase
   [HttpPost("create/step3")]
   public Task<IActionResult> CreateStep3([FromBody] TaskCreateRequest request)
   {
-    return CreateInternal(request, 3);
+    return CreateInternal(request, 1, 3);
   }
 
   [HttpPut("tasks-board/update-status")]

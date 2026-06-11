@@ -43,7 +43,7 @@ public class TaskService : ITaskService
     return await _context.Tasks
         .Where(t => t.EventId == eventId)
         .Include(t => t.Employee)
-        .Where(t => t.Employee.RoleId == 3)
+        .Where(t => t.Employee.RoleId == 3 || t.Employee.RoleId == 1)
         .Select(t => new TaskDto
         {
           Id = t.Id,
@@ -78,7 +78,7 @@ public class TaskService : ITaskService
     return tasks;
   }
 
-  public async Task<bool> CreateTaskAsync(string login, int expectedRoleId, TaskDto dto)
+  public async Task<bool> CreateTaskAsync(string login, int[] allowedRoleIds, TaskDto dto)
   {
     var user = await _context.Users
         .FirstOrDefaultAsync(u => u.UserName == login);
@@ -86,7 +86,7 @@ public class TaskService : ITaskService
     if (user == null)
       return false;
 
-    if (user.RoleId != expectedRoleId)
+    if (!allowedRoleIds.Contains(user.RoleId))
       return false;
 
     bool alreadyInOrganization = await _context.Organizations
@@ -147,7 +147,7 @@ public class TaskService : ITaskService
 
       var employeeTasks = await _context.Tasks
         .Where(t =>
-          eventIds.Contains(t.EventId) &&
+          (eventIds.Contains(t.EventId) || t.EmployeeId == userId) &&
           !hiddenTaskIds.Contains(t.Id))
         .Include(t => t.Employee)
         .Include(t => t.Event)
